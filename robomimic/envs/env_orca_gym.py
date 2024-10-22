@@ -104,12 +104,13 @@ class EnvOrcaGym(EB.EnvBase):
             height (int): height of image to render - only used if mode is "rgb_array"
             width (int): width of image to render - only used if mode is "rgb_array"
         """
-        if mode =="human":
-            return self.env.render(mode=mode, **kwargs)
-        if mode == "rgb_array":
-            return self.env.render(mode="rgb_array", height=height, width=width)
-        else:
-            raise NotImplementedError("mode={} is not implemented".format(mode))
+        pass 
+        # if mode =="human":
+        #     return self.env.render(mode=mode, **kwargs)
+        # if mode == "rgb_array":
+        #     return self.env.render(mode="rgb_array", height=height, width=width)
+        # else:
+        #     raise NotImplementedError("mode={} is not implemented".format(mode))
 
     def get_observation(self, obs=None):
         """
@@ -191,7 +192,7 @@ class EnvOrcaGym(EB.EnvBase):
         Returns environment type (int) for this kind of environment.
         This helps identify this env class.
         """
-        return EB.EnvType.GYM_TYPE
+        return EB.EnvType.ORCA_GYM_TYPE
 
     def serialize(self):
         """

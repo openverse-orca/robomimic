@@ -166,8 +166,8 @@ class EnvOrcaGym(EB.EnvBase):
         { str: bool } with at least a "task" key for the overall task success,
         and additional optional keys corresponding to other task criteria.
         """
-        if hasattr(self.env.unwrapped, "_check_success"):
-            return self.env.unwrapped._check_success()
+        if hasattr(self.env.unwrapped, "check_success"):
+            return self.env.unwrapped.check_success()
 
         # gym envs generally don't check task success - we only compare returns
         return { "task" : False }

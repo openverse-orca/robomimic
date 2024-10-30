@@ -10,8 +10,8 @@ from copy import deepcopy
 import gymnasium as gym
 import robomimic.envs.env_base as EB
 import robomimic.utils.obs_utils as ObsUtils
-from orca_gym.orca_gym import OrcaGym
-from envs.orca_gym_env import OrcaGymEnv
+from orca_gym.orca_gym import OrcaGymRemote
+from envs.orca_gym_env import OrcaGymRemoteEnv
 
 class EnvOrcaGym(EB.EnvBase):
     """Wrapper class for orca gym"""

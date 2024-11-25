@@ -10,8 +10,8 @@ from copy import deepcopy
 import gymnasium as gym
 import robomimic.envs.env_base as EB
 import robomimic.utils.obs_utils as ObsUtils
-from orca_gym.orca_gym import OrcaGymRemote
-from envs.orca_gym_env import OrcaGymRemoteEnv
+# from orca_gym.orca_gym import OrcaGymRemote
+# from envs.orca_gym_env import OrcaGymRemoteEnv
 
 class EnvOrcaGym(EB.EnvBase):
     """Wrapper class for orca gym"""
@@ -59,7 +59,7 @@ class EnvOrcaGym(EB.EnvBase):
             done (bool): whether the task is done
             info (dict): extra information
         """
-        obs, reward, done, info = self.env.step(action)
+        obs, reward, done, truncated, info = self.env.step(action)
         self._current_obs = obs
         self._current_reward = reward
         self._current_done = done
@@ -72,7 +72,7 @@ class EnvOrcaGym(EB.EnvBase):
         Returns:
             observation (dict): initial observation dictionary.
         """
-        self._current_obs = self.env.reset()
+        self._current_obs, _ = self.env.reset()
         self._current_reward = None
         self._current_done = None
         return self.get_observation(self._current_obs)
@@ -123,7 +123,8 @@ class EnvOrcaGym(EB.EnvBase):
         if obs is None:
             assert self._current_obs is not None
             obs = self._current_obs
-        return { "flat" : np.copy(obs) }
+        # return { "flat" : obs }
+        return obs
 
     def get_state(self):
         """

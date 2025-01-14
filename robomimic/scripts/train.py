@@ -266,7 +266,7 @@ def train(config, device):
                 horizon=config.experiment.rollout.horizon,
                 use_goals=config.use_goals,
                 num_episodes=num_episodes,
-                render=False,
+                render=config.experiment.render,
                 video_dir=video_dir if config.experiment.render_video else None,
                 epoch=epoch,
                 video_skip=config.experiment.get("video_skip", 5),

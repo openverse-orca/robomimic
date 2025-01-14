@@ -44,7 +44,9 @@ class EnvOrcaGym(EB.EnvBase):
         self._current_reward = None
         self._current_done = None
         self._done = None
+        print("EnvOrcaGym: env_name = ", env_name, "kwargs = ", kwargs)        
         self.env = gym.make(env_name, **kwargs)   # env_name = env_id
+
 
     def step(self, action):
         """
@@ -105,12 +107,12 @@ class EnvOrcaGym(EB.EnvBase):
             width (int): width of image to render - only used if mode is "rgb_array"
         """
         pass 
-        # if mode =="human":
-        #     return self.env.render(mode=mode, **kwargs)
-        # if mode == "rgb_array":
-        #     return self.env.render(mode="rgb_array", height=height, width=width)
-        # else:
-        #     raise NotImplementedError("mode={} is not implemented".format(mode))
+        if mode =="human":
+            return self.env.unwrapped.render_callback(mode=mode, **kwargs)
+        if mode == "rgb_array":
+            return self.env.render(mode="rgb_array", height=height, width=width)
+        else:
+            raise NotImplementedError("mode={} is not implemented".format(mode))
 
     def get_observation(self, obs=None):
         """
@@ -263,7 +265,7 @@ class EnvOrcaGym(EB.EnvBase):
         """
         Returns version of robosuite used for this environment, eg. 1.2.0
         """
-        return self.env.get_env_version()
+        return self.env.unwrapped.get_env_version()
 
     def __repr__(self):
         """

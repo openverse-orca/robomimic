@@ -61,7 +61,8 @@ class EnvOrcaGym(EB.EnvBase):
             done (bool): whether the task is done
             info (dict): extra information
         """
-        obs, reward, done, truncated, info = self.env.step(action)
+        # print("EnvOrcaGym: step action = ", action)
+        obs, reward, done, truncated, info = self.env.unwrapped.step(action)
         self._current_obs = obs
         self._current_reward = reward
         self._current_done = done
@@ -74,7 +75,7 @@ class EnvOrcaGym(EB.EnvBase):
         Returns:
             observation (dict): initial observation dictionary.
         """
-        self._current_obs, _ = self.env.reset()
+        self._current_obs, _ = self.env.unwrapped.reset()
         self._current_reward = None
         self._current_done = None
         return self.get_observation(self._current_obs)

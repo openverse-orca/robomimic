@@ -134,7 +134,7 @@ class EnvOrcaGym(EB.EnvBase):
         Get current environment simulator state as a dictionary. Should be compatible with @reset_to.
         """
         # NOTE: assumes MuJoCo gym task!
-        xml = self.env.sim.model.get_xml() # model xml file
+        xml = self.env.unwrapped.sim.model.get_xml() # model xml file
         state = np.array(self.env.sim.get_state().flatten()) # simulator state
         return dict(model=xml, states=state)
 

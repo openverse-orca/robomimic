@@ -208,6 +208,7 @@ class BC(PolicyAlgo):
             net=self.nets["policy"],
             optim=self.optimizers["policy"],
             loss=losses["action_loss"],
+            max_grad_norm=self.algo_config.optim_params.policy.max_gradient_norm,
         )
         info["policy_grad_norms"] = policy_grad_norms
         return info

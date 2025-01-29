@@ -30,6 +30,7 @@ class BCConfig(BaseConfig):
         self.algo.optim_params.policy.learning_rate.epoch_schedule = [] # epochs where LR decay occurs
         self.algo.optim_params.policy.learning_rate.scheduler_type = "multistep" # learning rate scheduler ("multistep", "linear", etc) 
         self.algo.optim_params.policy.regularization.L2 = 0.00          # L2 regularization strength
+        self.algo.optim_params.policy.max_gradient_norm = 1.0 # max gradient norm for clipping
 
         # loss weights
         self.algo.loss.l2_weight = 1.0      # L2 loss weight

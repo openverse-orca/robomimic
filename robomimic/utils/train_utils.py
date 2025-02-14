@@ -218,6 +218,9 @@ def run_rollout(
 
     total_reward = 0.
     success = { k: False for k in env.is_success() } # success metrics
+    
+    action_step = env.env.unwrapped.get_action_step()
+    print("Action step: ", action_step)
 
     try:
         for step_i in range(horizon):
@@ -226,11 +229,12 @@ def run_rollout(
             ac = policy(ob=ob_dict, goal=goal_dict)
 
             # play action
-            ob_dict, r, done, _ = env.step(ac)
+            for _ in range(action_step):
+                ob_dict, r, done, _ = env.step(ac)
 
-            # render to screen
-            if render:
-                env.render(mode="human")
+                # render to screen
+                if render:
+                    env.render(mode="human")
 
             # compute reward
             total_reward += r

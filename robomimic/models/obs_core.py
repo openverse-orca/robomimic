@@ -171,6 +171,7 @@ class VisualCore(EncoderCore, BaseNets.ConvBase):
         Forward pass through visual core.
         """
         ndim = len(self.input_shape)
+        # print("inputs.shape: ", tuple(inputs.shape)[-ndim:], "self.input_shape: ", tuple(self.input_shape))
         assert tuple(inputs.shape)[-ndim:] == tuple(self.input_shape)
         return super(VisualCore, self).forward(inputs)
 

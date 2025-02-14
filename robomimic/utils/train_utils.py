@@ -26,6 +26,10 @@ from robomimic.envs.env_base import EnvBase
 from robomimic.envs.wrappers import EnvWrapper
 from robomimic.algo import RolloutPolicy
 
+from orca_gym.sensor.rgbd_camera import CameraWrapper
+from robomimic.utils.obs_utils import batch_image_hwc_to_chw
+from collections import deque
+
 
 def get_exp_dir(config, auto_remove_exp_dir=False):
     """
@@ -206,8 +210,29 @@ def run_rollout(
     assert isinstance(env, EnvBase) or isinstance(env, EnvWrapper)
 
     policy.start_episode()
-
+    
+    if hasattr(env.env, "unwrapped"):
+        action_step = env.env.unwrapped.get_action_step()
+        camera_config = env.env.unwrapped.get_camera_config()
+        frame_deque = None
+    else:
+        frame_deque = deque(maxlen=10)
+        action_step = env.env.env.unwrapped.get_action_step()
+        camera_config = env.env.env.unwrapped.get_camera_config()
+    # print("Action step: ", action_step)
+    
+    
+    # print("Camera config: ", camera_config)
+    cameras = [CameraWrapper(name=camera_name, port=camera_port) for camera_name, camera_port in camera_config.items()]
+    for camera in cameras:
+        camera.start()
+        
+    # wait for cameras to start
+    time.sleep(0.1)
+    
     ob_dict = env.reset()
+    env.render(mode="human")
+    
     goal_dict = None
     if use_goals:
         # retrieve goal from the environment
@@ -219,11 +244,26 @@ def run_rollout(
     total_reward = 0.
     success = { k: False for k in env.is_success() } # success metrics
     
-    action_step = env.env.unwrapped.get_action_step()
-    print("Action step: ", action_step)
-
     try:
         for step_i in range(horizon):
+
+            for camera in cameras:
+                camera_frame = camera.get_frame(format='rgb24', size=(128, 128))
+                # print("read new frame for port ", camera.port)
+                # imageio.imwrite(f"camera_frame_{camera.name}_{step_i}.png", camera_frame)
+                camera_frame = batch_image_hwc_to_chw(camera_frame)
+                
+                if frame_deque is None:
+                    ob_dict[camera.name] = camera_frame
+                else:
+                    frame_deque.append(camera_frame)
+                    for _ in range(10 - len(frame_deque)):
+                        frame_deque.append(camera_frame)
+                        
+                    ob_dict[camera.name] = np.array(frame_deque)
+                
+                # camera_frame = np.array([camera_frame] * 10)
+                
 
             # get action from policy
             ac = policy(ob=ob_dict, goal=goal_dict)
@@ -232,9 +272,11 @@ def run_rollout(
             for _ in range(action_step):
                 ob_dict, r, done, _ = env.step(ac)
 
-                # render to screen
-                if render:
-                    env.render(mode="human")
+            # render to screen
+            if render:
+                env.render(mode="human")
+                time.sleep(0.03)  # wait the rendering to catch up by the camera monitor
+                        
 
             # compute reward
             total_reward += r
@@ -254,6 +296,8 @@ def run_rollout(
             # break if done
             if done or (terminate_on_success and success["task"]):
                 break
+            
+
 
     except env.rollout_exceptions as e:
         print("WARNING: got rollout exception {}".format(e))

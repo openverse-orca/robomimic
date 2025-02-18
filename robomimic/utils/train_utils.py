@@ -181,6 +181,7 @@ def run_rollout(
         video_writer=None,
         video_skip=5,
         terminate_on_success=False,
+        realtime_step=0.0
     ):
     """
     Runs a rollout in an environment with the current network parameters.
@@ -211,7 +212,7 @@ def run_rollout(
 
     policy.start_episode()
     
-    if hasattr(env.env, "unwrapped"):
+    if isinstance(env, EnvBase):
         action_step = env.env.unwrapped.get_action_step()
         camera_config = env.env.unwrapped.get_camera_config()
         frame_deque = None
@@ -246,6 +247,8 @@ def run_rollout(
     
     try:
         for step_i in range(horizon):
+            if realtime_step > 0.0:
+                start_time = time.time()
 
             for camera in cameras:
                 camera_frame = camera.get_frame(format='rgb24', size=(128, 128))
@@ -297,6 +300,11 @@ def run_rollout(
             if done or (terminate_on_success and success["task"]):
                 break
             
+            # sleep to maintain real-time speed
+            if realtime_step > 0.0:
+                elapsed_time = time.time() - start_time
+                if elapsed_time < realtime_step:
+                    time.sleep(realtime_step - elapsed_time)            
 
 
     except env.rollout_exceptions as e:

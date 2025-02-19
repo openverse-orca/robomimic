@@ -278,7 +278,8 @@ def run_rollout(
             # render to screen
             if render:
                 env.render(mode="human")
-                time.sleep(0.03)  # wait the rendering to catch up by the camera monitor
+                if (len(cameras)) > 0:
+                    time.sleep(0.03)  # wait the rendering to catch up by the camera monitor
                         
 
             # compute reward

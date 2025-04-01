@@ -251,7 +251,7 @@ def run_rollout(
                 start_time = time.time()
 
             for camera in cameras:
-                camera_frame = camera.get_frame(format='rgb24', size=(128, 128))
+                camera_frame, _ = camera.get_frame(format='rgb24', size=(128, 128))
                 # print("read new frame for port ", camera.port)
                 # imageio.imwrite(f"camera_frame_{camera.name}_{step_i}.png", camera_frame)
                 camera_frame = batch_image_hwc_to_chw(camera_frame)
